@@ -8,35 +8,73 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import java.util.List;
 
 public class GoogleSuggest {
+  private static final int TIMEOUT = 5000;
+  private static final String RESULTS_DIV = "sbdd_a";
+  private static final String SUGGESTIONS = "//div[@class='sbqs_c']";
+
+  private final WebDriver driver;
+
+  private GoogleSuggest() {
+    this.driver = new FirefoxDriver();
+  }
+
   public static void main(String[] args) throws Exception {
-    // The Firefox driver supports javascript
-    WebDriver driver = new FirefoxDriver();
+
+    GoogleSuggest suggest = new GoogleSuggest();
 
     // Go to the Google Suggest home page
-    driver.get("http://www.google.com/webhp?complete=1&hl=en");
+    suggest.driver.get("http://www.google.com/webhp?complete=1&hl=en");
+
 
     // Enter the query string "Cheese"
-    WebElement query = driver.findElement(By.name("q"));
+    WebElement query = suggest.waitForDisplayedElement(By.name("q"), TIMEOUT);
     query.sendKeys("Cheese");
 
-    // Sleep until the div we want is visible or 5 seconds is over
-    long end = System.currentTimeMillis() + 5000;
-    while (System.currentTimeMillis() < end) {
-      WebElement resultsDiv = driver.findElement(By.className("gssb_e"));
+    Thread.sleep(500);
 
-      // If results have been returned, the results are displayed in a drop down.
-      if (resultsDiv.isDisplayed()) {
-        break;
-      }
-    }
+    suggest.waitForDisplayedElement(By.className(RESULTS_DIV), TIMEOUT);
 
     // And now list the suggestions
-    List<WebElement> allSuggestions = driver.findElements(By.xpath("//td[@class='gssb_a gbqfsf']"));
+
+    List<WebElement> allSuggestions = suggest.waitForDisplayedElements(By.xpath(SUGGESTIONS), TIMEOUT);
 
     for (WebElement suggestion : allSuggestions) {
       System.out.println(suggestion.getText());
     }
 
-    driver.quit();
+    Thread.sleep(500);
+
+    // Now list the visible text
+    WebElement body = suggest.driver.findElement(By.tagName("body"));
+    System.out.println(body.getText());
+
+    suggest.driver.quit();
+  }
+
+  private WebElement waitForDisplayedElement(By by, int timeout) {
+    long end = System.currentTimeMillis() + timeout;
+    while (System.currentTimeMillis() < end) {
+      WebElement retval = driver.findElement(by);
+
+      // If results have been returned, the results are displayed in a drop down.
+      if (retval.isDisplayed()) {
+        return retval;
+      }
+    }
+    return null;
+  }
+
+  private List<WebElement> waitForDisplayedElements(By by, int timeout) {
+    long end = System.currentTimeMillis() + timeout;
+    while (System.currentTimeMillis() < end) {
+      List<WebElement> retval = driver.findElements(by);
+
+      // If results have been returned, the results are displayed in a drop down.
+      if (retval != null) {
+        return retval;
+      }
+    }
+    return null;
   }
 }
+
