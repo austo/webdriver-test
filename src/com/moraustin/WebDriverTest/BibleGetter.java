@@ -23,6 +23,7 @@ public class BibleGetter {
   private static final By AP_BOOK = By.className("ap-book");
   private static final By CHAPTERS = By.className("chapters");
   private static final By PASSAGE_TEXT = By.className("passage-text");
+  private static final By VERSE_REGION = By.className("span[id^=en-NRSV-]");
 
   private final WebDriver driver;
   private final WebDriverWait driverWait;
@@ -98,6 +99,7 @@ public class BibleGetter {
     return null;
   }
 
+  // TODO: the same thing with jsoup, or Go
   private void printLinks() {
     List<WebElement> links = driver.findElements(By.tagName("a"));
     for (WebElement link : links) {
@@ -106,7 +108,7 @@ public class BibleGetter {
       try {
         linkIndex = Integer.parseInt(linkText);
         if (linkIndex > 0 && linkIndex < 200) {
-          System.out.printf("%s%s\n", BASE_URL, link.getAttribute("href"));
+          System.out.printf("%s\n", link.getAttribute("href"));
         }
       } catch (NumberFormatException ignored) {
       }
