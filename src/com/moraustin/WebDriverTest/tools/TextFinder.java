@@ -26,16 +26,13 @@ public class TextFinder {
 
     public static Result isQuestion(String candidate) {
         Result r = new Result();
-        Matcher m = START_QUESTION.matcher(candidate);
-        if (m.matches()) {
-            r.found = true;
-            r.text = m.group(1).trim();
-            return r;
-        }
-        m = END_QUESTION.matcher(candidate);
-        if (m.matches()) {
-            r.found = true;
-            r.text = m.group(1).trim();
+        for (Pattern p : new Pattern[]{ START_QUESTION, END_QUESTION }) {
+            Matcher m = p.matcher(candidate);
+            if (m.matches()) {
+                r.found = true;
+                r.text = m.group(1).trim();
+                return r;
+            }
         }
         return r;
     }
