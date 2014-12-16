@@ -27,8 +27,8 @@ public class TextExtractor {
         for (String s : Splitter.on('\n').omitEmptyStrings().split(bodyText)) {
             TextFinder.Result result = TextFinder.isQuestion(s);
             if (result.found) {
-                System.out.printf("%s - Question (%s), Subject (%s)\n",
-                        s, result.text, Joiner.on(", ").skipNulls().join(result.subjects));
+                System.out.printf("%s (Question about %s)\n",
+                        s, Joiner.on(", ").skipNulls().join(result.subjects));
             }
             else {
                 System.out.printf("%s\n", s);
