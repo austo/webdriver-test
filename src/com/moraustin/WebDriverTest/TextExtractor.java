@@ -1,5 +1,6 @@
 package com.moraustin.WebDriverTest;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.moraustin.WebDriverTest.tools.TextFinder;
 import org.openqa.selenium.By;
@@ -26,7 +27,8 @@ public class TextExtractor {
         for (String s : Splitter.on('\n').omitEmptyStrings().split(bodyText)) {
             TextFinder.Result result = TextFinder.isQuestion(s);
             if (result.found) {
-                System.out.printf("%s - Question (%s)\n", s, result.text);
+                System.out.printf("%s - Question (%s), Subject (%s)\n",
+                        s, result.text, Joiner.on(", ").skipNulls().join(result.subjects));
             }
             else {
                 System.out.printf("%s\n", s);
