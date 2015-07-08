@@ -19,8 +19,13 @@ public class GoogleSuggest {
 
     private static final String TARGET_URL = "http://www.google.com/webhp?complete=1&hl=en";
 
+//    private static final String SELENIUM_HUB_IP = "10.1.5.43";
+//    private static final String SELENIUM_HUB_IP = "192.168.59.103";
+//    private static final String SELENIUM_HUB_IP = "192.168.59.104";
+    private static final String SELENIUM_HUB_IP = "54.175.246.47";
+
     private static final int TIMEOUT = 5000;
-    private static final int MAX_THREADS = 10;
+    private static final int MAX_THREADS = 200;
     private static final By RESULTS_DIV = By.className("sbdd_a");
     private static final By SUGGESTIONS = By.xpath("//div[@class='sbqs_c']");
     private static final By RESULTS = By.id("rcnt");
@@ -31,7 +36,7 @@ public class GoogleSuggest {
 
     private GoogleSuggest() throws MalformedURLException {
         DesiredCapabilities capability = DesiredCapabilities.firefox();
-        this.driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+        this.driver = new RemoteWebDriver(new URL(String.format("http://%s:4444/wd/hub", SELENIUM_HUB_IP)), capability);
         this.driverWait = new WebDriverWait(this.driver, TIMEOUT / 1000);
     }
 
@@ -40,7 +45,7 @@ public class GoogleSuggest {
         ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
         for (int i = 0; i < MAX_THREADS; i++) {
             Runnable suggestionGetter = new SuggestionGetter(i);
-            Thread.sleep(5000);
+            Thread.sleep(2000);
             executor.execute(suggestionGetter);
         }
         executor.shutdown();
