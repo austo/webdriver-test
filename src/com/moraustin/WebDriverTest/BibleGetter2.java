@@ -43,16 +43,8 @@ public class BibleGetter2 {
         BibleGetter2 getter = new BibleGetter2(new FirefoxDriver());
 
         try {
-            for (By by : Arrays.asList(OT_BOOK, NT_BOOK, AP_BOOK)) {
-                getter.driver.get(BOOK_LIST_URL);
-                getter.driverWait.until((WebDriver input) -> input.findElements(by).size() > 0);
-
-                List<WebElement> elements = getter.driver.findElements(by);
-
-                for (int i = 0; i < elements.size(); i++) {
-                    System.out.println(getter.getBookText(getter.getBookLinks(by, i)));
-                }
-            }
+//            getter.printAllBooks(System.out);
+            getter.printBook("Exodus", System.out);
         } finally {
             getter.driver.quit();
         }
@@ -66,9 +58,44 @@ public class BibleGetter2 {
             List<WebElement> elements = driver.findElements(by);
 
             for (int i = 0; i < elements.size(); i++) {
-                printStream.println(getBookText(getBookLinks(by, i)));
+                printStream.println(getBookText(by, i));
             }
         }
+    }
+
+    public void printBookNames(PrintStream printStream) {
+        driver.get(BOOK_LIST_URL);
+        driverWait.until((WebDriver d) -> d.findElements(BOOK_NAME).size() > 0);
+
+        List<WebElement> elements = driver.findElements(BOOK_NAME);
+
+        elements.forEach(e -> printStream.println(e.getText()));
+    }
+
+    public void printBook(String bookName, PrintStream printStream) {
+        driver.get(BOOK_LIST_URL);
+        driverWait.until((WebDriver input) -> input.findElements(BOOK_NAME).size() > 0);
+
+        for (By by : Arrays.asList(OT_BOOK, NT_BOOK, AP_BOOK)) {
+            List<WebElement> elements = driver.findElements(by);
+
+            for (int i = 0; i < elements.size(); i++) {
+                WebElement element = elements.get(i);
+                if (element.findElement(BOOK_NAME).getText().equalsIgnoreCase(bookName)) {
+                    printStream.println(getBookText(by, i));
+                    return;
+                }
+            }
+        }
+    }
+
+    private String getBookText(By by, int index) {
+        List<String> links = getBookLinks(by, index);
+        StringBuilder builder = new StringBuilder();
+        links.stream().map(this::getChapterText).forEach(s -> {
+            builder.append(s).append("\n\n");
+        });
+        return builder.toString();
     }
 
     private List<String> getBookLinks(By by, int index) {
@@ -86,14 +113,6 @@ public class BibleGetter2 {
                     e.getAttribute("href")).collect(Collectors.toList());
         }
         return new ArrayList<>();
-    }
-
-    private String getBookText(List<String> links) {
-        StringBuilder builder = new StringBuilder();
-        links.stream().map(this::getChapterText).forEach(s -> {
-            builder.append(s).append("\n\n");
-        });
-        return builder.toString();
     }
 
     private String getChapterText(String chapterUrl) {
