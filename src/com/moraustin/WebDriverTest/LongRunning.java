@@ -98,7 +98,7 @@ public class LongRunning {
             "4 Maccabees"
     };
 
-    private static final String SELENIUM_HUB_IP = /*"54.175.246.47"; */ "54.175.117.207";
+    private static final String SELENIUM_HUB_IP = /*"54.175.246.47"; */ "54.175.117.207"; /*"use-selhub01.surveysampling.com";*/
 
     public static void main(String... args) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(BOOKS.length);
